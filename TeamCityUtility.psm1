@@ -9,15 +9,23 @@
 
 #>
 
-$TCFunctions  = @(Get-ChildItem -Recurse -Path $PSScriptRoot\*.ps1 | Where-Object { $_ -notmatch '\.Tests.ps1' })
+[cmdletbinding()]
+param()
 
-ForEach ($ThisFunction in @($TCFunctions)) {
-    try {
-        . $ThisFunction.fullname
-    }
-    catch {
-        Write-Error -Message "Failed to import function $($ThisFunction.fullname): $_"
-    }
+Write-Verbose $PSScriptRoot
+
+Write-Verbose 'Import everything in sub folders folder'
+ForEach($Folder in @('Public')) {
+	$Root = Join-Path -Path $PSScriptRoot -ChildPath $Folder
+	if(Test-Path -Path $Root) {
+		Write-Verbose "processing folder $Root"
+		$Files = Get-ChildItem -Path $Root -Filter *.ps1 -Recurse
+		# dot source each file
+		$Files | Where-Object{ $_.name -NotLike '*.Tests.ps1'} | ForEach-Object {Write-Verbose $_.basename; . $PSItem.FullName}
+	}
 }
 
-Export-ModuleMember -Function $TCFunctions.Basename
+Export-ModuleMember -Function (Get-ChildItem -Path "$PSScriptRoot\Public\*.ps1").BaseName
+
+
+
