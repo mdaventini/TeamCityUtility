@@ -1,15 +1,15 @@
 ﻿function Set-TeamCityParam {
 	param(
-		[parameter(Mandatory=$true, HelpMessage="Must be a valid TeamCity Url. Example -TCServerUrl 'http://TeamCity.yourdomain:8082'")] [String[]] $TCServerUrl, 
-		[parameter(Mandatory=$true, HelpMessage="Valid UserName in TeamCity. Example -TCUser teamcityuser")] [String[]] $TCUser,
-		[parameter(Mandatory=$true, HelpMessage="Password for valid UserName in TeamCity. ")] [String[]] $TCSecret,
-		[parameter(Mandatory=$true, HelpMessage="Parameter Locator. Example -TCParamLocator 'projects/id:_Root'")] [String[]] $TCParamLocator,
-		[parameter(Mandatory=$true, HelpMessage="Parameter Name. Example -TCParamName 'env.DefaultEnvironment'")] [String[]] $TCParamName,
-		[parameter(Mandatory=$true, HelpMessage="Parameter rawValue. Example -TCParamRaw select display='hidden' description='Default environment to deploy to when using Octopus. This is also defined by Team tennants.' data_1='Dev' data_2='Test' data_3='Staging' data_4='Production'")] [String[]] $TCParamRaw,
-		[parameter(Mandatory=$true, HelpMessage="Parameter Value. Example -TCParamValue Dev")] [String[]] $TCParamValue
+		[parameter(HelpMessage="Must be a valid TeamCity Url. Example -TCServerUrl 'http://TeamCity.yourdomain:8082'")][ValidateNotNullOrEmpty()][String[]]$TCServerUrl, 
+		[parameter(HelpMessage="Valid UserName in TeamCity. Example -TCUser teamcityuser")][ValidateNotNullOrEmpty()][String[]]$TCUser,
+		[parameter(HelpMessage="Password for valid UserName in TeamCity. ")][ValidateNotNullOrEmpty()][String[]]$TCSecret,
+		[parameter(HelpMessage="Parameter Locator. Example -TCParamLocator 'projects/id:_Root'")][ValidateNotNullOrEmpty()][String[]]$TCParamLocator,
+		[parameter(HelpMessage="Parameter Name. Example -TCParamName 'env.DefaultEnvironment'")][ValidateNotNullOrEmpty()][String[]]$TCParamName,
+		[parameter(HelpMessage="Parameter rawValue. Example -TCParamRaw select display='hidden' description='Default environment to deploy to when using Octopus. This is also defined by Team tennants.' data_1='Dev' data_2='Test' data_3='Staging' data_4='Production'")][ValidateNotNullOrEmpty()][String[]]$TCParamRaw,
+		[parameter(HelpMessage="Parameter Value. Example -TCParamValue Dev")][String[]][ValidateNotNull()]$TCParamValue
 	)
 	try {
-		Write-Host "Create CICredential"
+		Write-Verbose "Creating CICredential for $TCUser"
 		$CICredential = New-Object -TypeName "System.Management.Automation.PSCredential" -ArgumentList $TCUser, (ConvertTo-SecureString -String "$TCSecret" -AsPlainText -Force)
 	}
 	catch {
@@ -21,34 +21,34 @@
     $ESRawValue = ""
     $UriParameter = "$TCServerUrl/httpAuth/app/rest/latest/$TCParamLocator/parameters/$TCParamName"
 	try {
-		Write-Host "Get Parameter"
-		Write-Host "Will run Invoke-RestMethod -Method Get -Uri $UriParameter -Credential $CICredential -Verbose"
+		Write-Verbose "Getting Parameter $UriParameter"
+		Write-Verbose "Will run Invoke-RestMethod -Method Get -Uri $UriParameter -Credential $CICredential -Verbose"
 		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriParameter -Credential $CICredential)
         $ESValue = $TCResponse.property.value
         $ESRawValue = $TCResponse.property.type.rawValue
 	}
 	catch {
 		Write-Host "$_" 
-		Write-Host "$UriParameter does not exist ... creating"
+		Write-Verbose "$UriParameter does not exist ... creating"
         $JData = (@{value = "$TCParamValue"}) | ConvertTo-Json
 		$TCResponse = ( Invoke-RestMethod -Method PUT -Uri $UriParameter -ContentType "application/json" -Credential $CICredential -Body $JData -Verbose )
         $ESValue = $TCResponse.property.value
      }
-    Write-Host "Existing State is" $TCResponse.property.name $ESValue $ESRawValue
+    Write-Verbose "Existing State is" $TCResponse.property.name $ESValue $ESRawValue
     try {
         if ( "$ESValue" -ne "$TCParamValue" ) {
-    	    Write-Host "$UriParameter/value must be updated"
-		    Write-Host "Will run Invoke-RestMethod -Method PUT -Uri $UriParameter/value -Credential $CICredential -Body $TCParamValue -Verbose"
+    	    Write-Verbose "$UriParameter/value must be updated"
+		    Write-Verbose "Will run Invoke-RestMethod -Method PUT -Uri $UriParameter/value -Credential $CICredential -Body $TCParamValue -Verbose"
 		    $TCResponse = ( Invoke-RestMethod -Method PUT -Uri $UriParameter/value -Credential $CICredential -Body $TCParamValue -Verbose ) 
 	    } else {
-		    Write-Host "$UriParameter/value is up to date"
+		    Write-Verbose "$UriParameter/value is up to date"
 	    }
         if ( "$ESRawValue" -ne "$TCParamRaw" ) {
-    	    Write-Host "$UriParameter/type/rawValue must be updated"
-		    Write-Host "Will run Invoke-RestMethod -Method PUT -Uri $UriParameter/type/rawValue -Credential $CICredential -Body $TCParamRaw -Verbose"
+    	    Write-Verbose "$UriParameter/type/rawValue must be updated"
+		    Write-Verbose "Will run Invoke-RestMethod -Method PUT -Uri $UriParameter/type/rawValue -Credential $CICredential -Body $TCParamRaw -Verbose"
 		    $TCResponse = ( Invoke-RestMethod -Method PUT -Uri $UriParameter/type/rawValue -Credential $CICredential -Body $TCParamRaw -Verbose ) 
 	    } else {
-		    Write-Host "$UriParameter/type/rawValue is up to date"
+		    Write-Verbose "$UriParameter/type/rawValue is up to date"
 	    }
 	}
 	catch {
