@@ -8,6 +8,7 @@
 		[parameter(HelpMessage="Parameter rawValue. Example -TCParamRaw select display='hidden' description='Default environment to deploy to when using Octopus. This is also defined by Team tennants.' data_1='Dev' data_2='Test' data_3='Staging' data_4='Production'")][ValidateNotNullOrEmpty()][String[]]$TCParamRaw,
 		[parameter(HelpMessage="Parameter Value. Example -TCParamValue Dev")][String[]][ValidateNotNull()]$TCParamValue
 	)
+	Write-Verbose "Set-TeamCityParam"
 	try {
 		Write-Verbose "Creating CICredential for $TCUser"
 		$CICredential = New-Object -TypeName "System.Management.Automation.PSCredential" -ArgumentList $TCUser, (ConvertTo-SecureString -String "$TCSecret" -AsPlainText -Force)
@@ -34,7 +35,7 @@
 		$TCResponse = ( Invoke-RestMethod -Method PUT -Uri $UriParameter -ContentType "application/json" -Credential $CICredential -Body $JData -Verbose )
         $ESValue = $TCResponse.property.value
      }
-    Write-Verbose "Existing State is" $TCResponse.property.name $ESValue $ESRawValue
+    Write-Verbose "Existing State is $TCResponse.property.name $ESValue $ESRawValue"
     try {
         if ( "$ESValue" -ne "$TCParamValue" ) {
     	    Write-Verbose "$UriParameter/value must be updated"
