@@ -22,8 +22,7 @@
     $ESRawValue = ""
     $UriParameter = "$TCServerUrl/httpAuth/app/rest/latest/$TCParamLocator/parameters/$TCParamName"
 	try {
-		Write-Verbose "Getting Parameter $UriParameter"
-		Write-Verbose "Will run Invoke-RestMethod -Method Get -Uri $UriParameter -Credential $CICredential -Verbose"
+		Write-Verbose "Getting Parameter using Invoke-RestMethod -Method Get -Uri $UriParameter -Credential $CICredential -Verbose"
 		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriParameter -Credential $CICredential)
         $ESValue = $TCResponse.property.value
         $ESRawValue = $TCResponse.property.type.rawValue
@@ -38,15 +37,13 @@
     Write-Verbose "Existing State is $TCResponse.property.name $ESValue $ESRawValue"
     try {
         if ( "$ESValue" -ne "$TCParamValue" ) {
-    	    Write-Verbose "$UriParameter/value must be updated"
-		    Write-Verbose "Will run Invoke-RestMethod -Method PUT -Uri $UriParameter/value -Credential $CICredential -Body $TCParamValue -Verbose"
+		    Write-Verbose "Updating Value Invoke-RestMethod -Method PUT -Uri $UriParameter/value -Credential $CICredential -Body $TCParamValue -Verbose"
 		    $TCResponse = ( Invoke-RestMethod -Method PUT -Uri $UriParameter/value -Credential $CICredential -Body $TCParamValue -Verbose ) 
 	    } else {
 		    Write-Verbose "$UriParameter/value is up to date"
 	    }
         if ( "$ESRawValue" -ne "$TCParamRaw" ) {
-    	    Write-Verbose "$UriParameter/type/rawValue must be updated"
-		    Write-Verbose "Will run Invoke-RestMethod -Method PUT -Uri $UriParameter/type/rawValue -Credential $CICredential -Body $TCParamRaw -Verbose"
+		    Write-Verbose "Updating rawValue Invoke-RestMethod -Method PUT -Uri $UriParameter/type/rawValue -Credential $CICredential -Body $TCParamRaw -Verbose"
 		    $TCResponse = ( Invoke-RestMethod -Method PUT -Uri $UriParameter/type/rawValue -Credential $CICredential -Body $TCParamRaw -Verbose ) 
 	    } else {
 		    Write-Verbose "$UriParameter/type/rawValue is up to date"
