@@ -15,7 +15,7 @@
 	}
 	catch {
 		Write-Host "$_" 
-		Throw "[ERROR] TeamCityParams: Creating CICredential failed"
+		Throw "[ERROR] Set-TeamCityParam: Creating CICredential failed"
 		exit 1
 	}
     $ESValue = ""
@@ -57,7 +57,7 @@
 	}
 	catch {
         Write-Host "$_" 
-		Write-Host "$UriParameter was not updated"
+		Throw "[ERROR] Set-TeamCityParam: $UriParameter was not updated"
         exit 1
     }
 }
