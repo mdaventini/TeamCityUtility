@@ -4,7 +4,7 @@
 		[parameter(HelpMessage="Valid UserName in TeamCity. Example -TCUser teamcityuser")][ValidateNotNullOrEmpty()][String[]]$TCUser,
 		[parameter(HelpMessage="Password for valid UserName in TeamCity. ")][ValidateNotNullOrEmpty()][String[]]$TCSecret,
 		[parameter(HelpMessage="Property Locator. Example -TCPropertyLocator 'projects/id:_Root'")][ValidateNotNullOrEmpty()][String[]]$TCPropertyLocator,
-		[parameter(HelpMessage="Property Name. Example -TCPropertyName 'env.DefaultEnvironment'")][ValidateNotNullOrEmpty()][String[]]$TCPropertyName,
+		[parameter(HelpMessage="Property Name. Example -TCPropertyName 'env.DefaultEnvironment'")][ValidateNotNullOrEmpty()][String[]]$TCPropertyName
 	)
 	Write-Verbose "Get-TeamCityProperty"
 	try {
