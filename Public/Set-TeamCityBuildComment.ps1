@@ -16,7 +16,7 @@
 		Throw "[ERROR] Set-TeamCityBuildComment: Creating CICredential failed"
 		exit 1
 	}
-    $UriComment = "$TCServerUrl/httpAuth/app/rest/latest/$TCBuildLocator"
+    $UriComment = "$TCServerUrl/httpAuth/app/rest/latest/$TCBuildLocator/comment"
 	try {
 		Write-Verbose "Setting Comment using Invoke-RestMethod -Method PUT -Uri $UriComment -Credential $CICredential -Verbose"
 		$TCResponse = Invoke-RestMethod -Method Put -Uri $UriComment -Credential $CICredential -Body $Comment -Verbose 
