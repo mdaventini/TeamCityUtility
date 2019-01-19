@@ -20,7 +20,8 @@
 	try {
 		Write-Verbose "Getting Parameter using Invoke-RestMethod -Method Get -Uri $UriParameter -Credential $CICredential -Verbose"
 		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriParameter -Credential $CICredential)
-$TCResponse
+		Write-Verbose $TCResponse.property.value
+		Return $TCResponse.property.value
 	}
 	catch {
 		Write-Host "$_" 

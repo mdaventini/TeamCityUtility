@@ -6,7 +6,7 @@
 		[parameter(HelpMessage="Parameter Locator. Example -TCParamLocator 'projects/id:_Root'")][ValidateNotNullOrEmpty()][String[]]$TCParamLocator,
 		[parameter(HelpMessage="Parameter Name. Example -TCParamName 'env.DefaultEnvironment'")][ValidateNotNullOrEmpty()][String[]]$TCParamName,
 		[parameter(HelpMessage="Parameter rawValue. Example -TCParamRaw select display='hidden' description='Default environment to deploy to when using Octopus. This is also defined by Team tennants.' data_1='Dev' data_2='Test' data_3='Staging' data_4='Production'")][ValidateNotNullOrEmpty()][String[]]$TCParamRaw,
-		[parameter(HelpMessage="Parameter Value. Example -TCParamValue Dev")][String[]][ValidateNotNullOrEmpty()]$TCParamValue
+		[parameter(HelpMessage="Parameter Value. Example -TCParamValue Dev")][String[]]$TCParamValue
 	)
 	Write-Verbose "Set-TeamCityParam"
 	try {
@@ -40,7 +40,7 @@
 		if ( "$TCParamValue" -ne "keep" ) {
 			if ( "$ESValue" -ne "$TCParamValue" ) {
 				Write-Verbose "Updating Value Invoke-RestMethod -Method PUT -Uri $UriParameter/value -Credential $CICredential -Body $TCParamValue -Verbose"
-				$TCResponse = ( Invoke-RestMethod -Method PUT -Uri $UriParameter/value -Credential $CICredential -Body $TCParamValue -Verbose ) 
+				$TCResponse = ( Invoke-RestMethod -Method PUT -Uri $UriParameter/value -Credential $CICredential -Body $TCParamValue -Verbose )
 			} else {
 				Write-Verbose "$UriParameter/value is up to date"
 			}

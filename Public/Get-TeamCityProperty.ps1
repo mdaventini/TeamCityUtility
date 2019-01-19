@@ -19,8 +19,9 @@
     $UriProperty = "$TCServerUrl/httpAuth/app/rest/latest/$TCPropertyLocator"
 	try {
 		Write-Verbose "Getting Property using Invoke-RestMethod -Method Get -Uri $UriProperty -Credential $CICredential -Verbose"
-		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriProperty -Credential $CICredential)
-		Return $TCResponse.build.properties.property
+		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriProperty -Credential $CICredential).build.properties.property
+		Write-Verbose $TCResponse
+		Return $TCResponse
 	}
 	catch {
 		Write-Host "$_" 
