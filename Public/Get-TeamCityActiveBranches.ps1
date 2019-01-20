@@ -6,7 +6,7 @@ function Get-TeamCityActiveBranches{
 		[parameter(HelpMessage="Branches pattern to select. Example -TCBranchesPattern '2.*-*'")][ValidateNotNullOrEmpty()][String[]]$TCBranchesPattern
 	)
 	Write-Verbose "Get-TeamCityActiveBranches"
-	<#
+			Write-Verbose "Get-TeamCityActiveBranches"
 	try {
 		Write-Verbose "Creating CICredential for $TCUser"
 		$CICredential = New-Object -TypeName "System.Management.Automation.PSCredential" -ArgumentList $TCUser, (ConvertTo-SecureString -String "$TCSecret" -AsPlainText -Force)
@@ -18,10 +18,12 @@ function Get-TeamCityActiveBranches{
 	}
 	$AllActiveBranches = @()
 	try {
-		Write-Verbose "Getting Prjects using Get-TeamCityProjects -TCServerUrl $TCServerUrl"
-		$TCResponse = (Get-TeamCityProjects -TCServerUrl $TCServerUrl -TCUser $TCUser -TCSecret $TCSecret -Verbose).projects.project
-		Write-Verbose $TCResponse
-		ForEach ( $ThisProject in ($TCResponse | Select-Object -Property name, href) ) {
+		$SavePoint = "Before Get-TeamCityProjects"
+		Write-Verbose "Getting Projects using Get-TeamCityProjects -TCServerUrl $TCServerUrl"
+		$TCResponse = (Get-TeamCityProjects -TCServerUrl $TCServerUrl -TCUser $TCUser -TCSecret $TCSecret -Verbose)
+		$SavePoint = "After Get-TeamCityProjects"
+		ForEach ( $ThisProject in ($TCResponse) ) {
+			$SavePoint = "For Each"
 			$XmlProjectBranches = (Invoke-RestMethod -Method Get -Uri ($TCServerUrl + $ThisProject.href + "/branches") -Credential $CICredential -Verbose).branches.branch | Where-Object { ( $_.name -Match $TCBranchesPattern) }
 			ForEach ( $ThisProjectBranches in $XmlProjectBranches) {
 				$AllActiveBranches += New-Object –TypeName PSObject -Property @{
@@ -34,8 +36,7 @@ function Get-TeamCityActiveBranches{
 	}
 	catch {
 		Write-Host "$_" 
-		Throw "[ERROR] Get-TeamCityActiveBranches"
+		Throw "[ERROR] Get-TeamCityActiveBranches $SavePoint"
         exit 1
     }
-	#>
 }
