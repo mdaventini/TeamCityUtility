@@ -17,7 +17,7 @@ function Get-TeamCityProjects{
     $UriTeamCity = "$TCServerUrl/httpAuth/app/rest/latest/projects"
 	try {
 		Write-Verbose "Getting Projects using Invoke-RestMethod -Method Get -Uri $UriTeamCity -Credential $CICredential -Verbose"
-		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriTeamCity -Credential $CICredential -Verbose)
+		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriTeamCity -Credential $CICredential -Verbose).projects.project
 		Write-Verbose $TCResponse
 		Return $TCResponse
 	}
