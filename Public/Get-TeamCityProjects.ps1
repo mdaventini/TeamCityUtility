@@ -18,7 +18,7 @@ function Get-TeamCityProjects{
 	try {
 		Write-Verbose "Getting Projects using Invoke-RestMethod -Method Get -Uri $UriTeamCity -Credential $CICredential -Verbose"
 		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriTeamCity -Credential $CICredential -Verbose).projects.project | Select-Object -Property Name, href
-		Write-Verbose -Message "Projects $TCResponse"
+		Write-Verbose -Message "Projects" $TCResponse | out-string
 		Return $TCResponse
 	}
 	catch {
