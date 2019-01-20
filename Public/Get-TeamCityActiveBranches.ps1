@@ -32,7 +32,8 @@ function Get-TeamCityActiveBranches{
 					Branch = $ThisProjectBranches.name}
 			}
 		}
-		Write-Verbose $AllActiveBranches
+		$TCOutput = $AllActiveBranches | out-string
+		Write-Verbose -Message "AllActiveBranches $TCOutput" 
 		Return $AllActiveBranches
 	}
 	catch {
