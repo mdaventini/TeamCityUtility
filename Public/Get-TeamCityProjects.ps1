@@ -19,8 +19,9 @@ function Get-TeamCityProjects{
 		$ErrorMessage = "$UriTeamCity does not exist."
 		Write-Verbose "Getting Projects using Invoke-RestMethod -Method Get -Uri $UriTeamCity -Credential $CICredential -Verbose"
 		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriTeamCity -Credential $CICredential -Verbose).projects.project | Select-Object -Property Name, href
+		$TCResponse
 		$ErrorMessage = "Parsing $TCResponse"
-		Write-Verbose -Message "Projects" $TCResponse | out-string
+		Write-Verbose -Message "Projects" ($TCResponse | out-string)
 		Return $TCResponse
 	}
 	catch {
