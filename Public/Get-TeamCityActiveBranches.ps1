@@ -3,7 +3,7 @@ function Get-TeamCityActiveBranches{
 		[parameter(HelpMessage="Must be a valid TeamCity Url. Example -TCServerUrl 'http://TeamCity.yourdomain:8082'")][ValidateNotNullOrEmpty()][String[]]$TCServerUrl, 
 		[parameter(HelpMessage="Valid UserName in TeamCity. Example -TCUser teamcityuser")][ValidateNotNullOrEmpty()][String[]]$TCUser,
 		[parameter(HelpMessage="Password for valid UserName in TeamCity. ")][ValidateNotNullOrEmpty()][String[]]$TCSecret,
-		[parameter(HelpMessage="Branches pattern to select. Example -TCBranchesPattern '2.*-*'")][ValidateNotNullOrEmpty()][String[]]$TCBranchesPattern
+		[parameter(HelpMessage="Branches pattern to select. Example -TCBranchesPattern '^2.*-*'")][ValidateNotNullOrEmpty()][String[]]$TCBranchesPattern
 	)
 	Write-Verbose "Get-TeamCityActiveBranches"
 	try {
@@ -23,14 +23,14 @@ function Get-TeamCityActiveBranches{
 		$SavePoint = "After Get-TeamCityProjects"
         Write-Verbose $SavePoint
 Write-Host $SavePoint		
-		ForEach ( $ThisProject in $TCResponse) {
+		ForEach ( $ThisProject in $TCResponse ) {
             $ProjName = $ThisProject.Name
             $ProjHRef = $ThisProject.href
 			$SavePoint = "For Each Project $ProjName $ProjHRef" 
 			$UriTeamCity = "$TCServerUrl$ProjHRef/branches"
             Write-Verbose $SavePoint
 Write-Host $SavePoint	
-			$XmlProjectBranches = (Invoke-RestMethod -Method Get -Uri $UriTeamCity -Credential $CICredential -Verbose).branches.branch | Where-Object { ( $_.name -Match $TCBranchesPattern) } | Select-Object -Property Name 
+			$XmlProjectBranches = (Invoke-RestMethod -Method Get -Uri $UriTeamCity -Credential $CICredential -Verbose).branches.branch | Where-Object { ( $_.name -Match $TCBranchesPattern ) } | Select-Object -Property Name 
 			ForEach ( $ThisProjectBranches in $XmlProjectBranches ) {
 				$SavePoint = "For Each Branch in $ProjName"
                 $BranchName = $ThisProjectBranches.Name
@@ -42,7 +42,7 @@ Write-Host "$SavePoint branch $BranchName"
 			}
 		}
 		$TCOutput = $AllActiveBranches | out-string
-		Write-Verbose -Message "AllActiveBranches $TCOutput" 
+		#Write-Verbose -Message "AllActiveBranches $TCOutput" 
 Write-Host "AllActiveBranches $TCOutput" 
 		Return $AllActiveBranches
 	}
