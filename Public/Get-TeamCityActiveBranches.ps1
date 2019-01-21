@@ -33,12 +33,9 @@ function Get-TeamCityActiveBranches{
 				$SavePoint = "For Each Branch in $ProjName"
                 $BranchName = $ThisProjectBranches.Name
 				Write-Verbose "$SavePoint branch $BranchName"
-			<#
-				$ProjBranch = $ThisProjectBranches.Name
 				$AllActiveBranches += New-Object –TypeName PSObject -Property @{
 					ProjectName = $ProjName;
-					Branch = $ProjBranch}
-			#>
+					Branch = $BranchName}
 			}
 		}
 		$TCOutput = $AllActiveBranches | out-string
