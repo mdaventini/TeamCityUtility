@@ -20,7 +20,8 @@
 	try {
 		Write-Verbose "Getting Property using Invoke-RestMethod -Method Get -Uri $UriProperty -Credential $CICredential -Verbose"
 		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriProperty -Credential $CICredential).build.properties.property
-		Write-Verbose $TCResponse
+		$TCOutput = $TCResponse | out-string
+		Write-Verbose $TCOutput
 		Return $TCResponse
 	}
 	catch {
