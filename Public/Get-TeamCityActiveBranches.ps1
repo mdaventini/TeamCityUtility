@@ -26,13 +26,15 @@ function Get-TeamCityActiveBranches{
             $ProjHRef = $ThisProject.href
 			$SavePoint = "For Each Project $ProjName $ProjHRef" 
 			$UriTeamCity = "$TCServerUrl$ProjHRef/branches"
-			$XmlProjectBranches = (Invoke-RestMethod -Method Get -Uri $UriTeamCity -Credential $CICredential -Verbose).branches.branch | Where-Object { ( $_.name -Match $TCBranchesPattern) } | Select-Object -Property Name, Href
+			$XmlProjectBranches = (Invoke-RestMethod -Method Get -Uri $UriTeamCity -Credential $CICredential -Verbose).branches.branch | Where-Object { ( $_.name -Match $TCBranchesPattern) } | Select-Object -Property Name
 			ForEach ( $ThisProjectBranches in $XmlProjectBranches) {
-				$SavePoint = "For Each Branch $ThisProjectBranches.Name"
+				$SavePoint = "For Each Branch in $ProjName"
+				$ProjBranch = $ThisProjectBranches.Name
 				$AllActiveBranches += New-Object –TypeName PSObject -Property @{
 					ProjectName = $ProjName;
-					Branch = $ThisProjectBranches.name}
+					Branch = $ProjBranch}
 			}
+			
 		}
 		$TCOutput = $AllActiveBranches | out-string
 		Write-Verbose -Message "AllActiveBranches $TCOutput" 
