@@ -21,21 +21,18 @@ function Get-TeamCityActiveBranches{
 		Write-Verbose "Getting Projects using Get-TeamCityProjects -TCServerUrl $TCServerUrl"
 		$TCResponse = (Get-TeamCityProjects -TCServerUrl $TCServerUrl -TCUser $TCUser -TCSecret $TCSecret -Verbose)
 		$SavePoint = "After Get-TeamCityProjects"
-Write-Host $SavePoint
+        Write-Verbose $SavePoint
 		ForEach ( $ThisProject in $TCResponse) {
             $ProjName = $ThisProject.Name
             $ProjHRef = $ThisProject.href
 			$SavePoint = "For Each Project $ProjName $ProjHRef" 
 			$UriTeamCity = "$TCServerUrl$ProjHRef/branches"
-Write-Host $SavePoint
-			$XmlProjectBranches = (Invoke-RestMethod -Method Get -Uri $UriTeamCity -Credential $CICredential -Verbose).branches.branch 
-			#| Where-Object { ( $_.name -Match $TCBranchesPattern) } 
-			| Select-Object -Property Name
-Write-Host $XmlProjectBranches
+            Write-Verbose $SavePoint
+			$XmlProjectBranches = (Invoke-RestMethod -Method Get -Uri $UriTeamCity -Credential $CICredential -Verbose).branches.branch | Where-Object { ( $_.name -Match $TCBranchesPattern) } | Select-Object -Property Name 
 			ForEach ( $ThisProjectBranches in $XmlProjectBranches) {
 				$SavePoint = "For Each Branch in $ProjName"
-				$_.Name
-				Write-Host "$SavePoint branch $_.Name"
+                $BranchName = $ThisProjectBranches.Name
+				Write-Verbose "$SavePoint branch $BranchName"
 			<#
 				$ProjBranch = $ThisProjectBranches.Name
 				$AllActiveBranches += New-Object –TypeName PSObject -Property @{
