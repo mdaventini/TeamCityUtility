@@ -18,24 +18,24 @@
 		Throw "[ERROR] Set-TeamCityParam: Creating CICredential failed"
 		exit 1
 	}
-    $ESValue = ""
-    $ESRawValue = ""
-    $UriParameter = "$TCServerUrl/httpAuth/app/rest/latest/$TCParamLocator/parameters/$TCParamName"
+	$ESValue = ""
+	$ESRawValue = ""
+	$UriParameter = "$TCServerUrl/httpAuth/app/rest/latest/$TCParamLocator/parameters/$TCParamName"
 	try {
 		Write-Verbose "Getting Parameter using Invoke-RestMethod -Method Get -Uri $UriParameter -Credential $CICredential -Verbose"
 		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriParameter -Credential $CICredential)
-        $ESValue = $TCResponse.property.value
-        $ESRawValue = $TCResponse.property.type.rawValue
+		$ESValue = $TCResponse.property.value
+		$ESRawValue = $TCResponse.property.type.rawValue
 	}
 	catch {
 		Write-Host "$_" 
 		Write-Verbose "$UriParameter does not exist ... creating"
-        $JData = (@{value = ""}) | ConvertTo-Json
+		$JData = (@{value = ""}) | ConvertTo-Json
 		$TCResponse = ( Invoke-RestMethod -Method PUT -Uri $UriParameter -ContentType "application/json" -Credential $CICredential -Body $JData -Verbose )
-        $ESValue = $TCResponse.property.value
-     }
-    Write-Verbose "Existing State is $TCResponse.property.name $ESValue $ESRawValue"
-    try {
+		$ESValue = $TCResponse.property.value
+	}
+	Write-Host "Existing State is" $TCResponse.property.name $ESValue $ESRawValue
+	try {
 		#Keep existing data
 		if ( "$TCParamValue" -ne "keep" ) {
 			if ( "$ESValue" -ne "$TCParamValue" ) {
@@ -56,8 +56,8 @@
 		}
 	}
 	catch {
-        Write-Host "$_" 
+		Write-Host "$_" 
 		Throw "[ERROR] Set-TeamCityParam: $UriParameter was not updated"
-        exit 1
-    }
+		exit 1
+	}
 }
