@@ -10,12 +10,11 @@
 	)
 	Write-Verbose "Set-TeamCityParam"
 	try {
-		Write-Verbose "Creating CICredential for $TCUser"
 		$CICredential = New-Object -TypeName "System.Management.Automation.PSCredential" -ArgumentList $TCUser, (ConvertTo-SecureString -String "$TCSecret" -AsPlainText -Force)
 	}
 	catch {
 		Write-Host "$_" 
-		Throw "[ERROR] Set-TeamCityParam: Creating CICredential failed"
+		Throw "[ERROR] Set-TeamCityParam: Creating CICredential for $TCUser failed"
 		exit 1
 	}
 	$ESValue = ""
@@ -26,6 +25,7 @@
 		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriParameter -Credential $CICredential)
 		$ESValue = $TCResponse.property.value
 		$ESRawValue = $TCResponse.property.type.rawValue
+		Write-Host "Existing State is" $TCResponse.property.name $ESValue $ESRawValue
 	}
 	catch {
 		Write-Host "$_" 
@@ -34,7 +34,6 @@
 		$TCResponse = ( Invoke-RestMethod -Method PUT -Uri $UriParameter -ContentType "application/json" -Credential $CICredential -Body $JData -Verbose )
 		$ESValue = $TCResponse.property.value
 	}
-	Write-Host "Existing State is" $TCResponse.property.name $ESValue $ESRawValue
 	try {
 		#Keep existing data
 		if ( "$TCParamValue" -ne "keep" ) {

@@ -7,7 +7,12 @@ This PowerShell module provides a series of cmdlets for interacting with [TeamCi
 
 ## Cmdlets
 
-* Set-TeamCityParam (since Version 1.0)
+* Get-TeamCityActiveBranches (since TeamCityUtility 1.1)
+* Get-TeamCityParam (since TeamCityUtility 1.1)
+* Get-TeamCityProjects (since TeamCityUtility 1.1)
+* Get-TeamCityProperty (since TeamCityUtility 1.1)
+* Set-TeamCityBuildComment (since TeamCityUtility 1.1)
+* Set-TeamCityParam (since TeamCityUtility 1.0)
 
 ## Version 1.0
 
