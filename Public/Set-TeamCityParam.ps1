@@ -8,7 +8,7 @@
 		[parameter(HelpMessage="Parameter rawValue. Example -TCParamRaw select display='hidden' description='Default environment to deploy to when using Octopus. This is also defined by Team tennants.' data_1='Dev' data_2='Test' data_3='Staging' data_4='Production'")][ValidateNotNullOrEmpty()][String[]]$TCParamRaw,
 		[parameter(HelpMessage="Parameter Value. Example -TCParamValue Dev")][String[]]$TCParamValue
 	)
-	Write-Verbose "Set-TeamCityParam"
+	Write-Verbose "Set-TeamCityParam -TCServerUrl $TCServerUrl -TCUser $TCUser -TCSecret SECRET -TCParamLocator $TCParamLocator -TCParamName $TCParamName -TCParamRaw $TCParamRaw -TCParamValue $TCParamValue"
 	try {
 		$CICredential = New-Object -TypeName "System.Management.Automation.PSCredential" -ArgumentList $TCUser, (ConvertTo-SecureString -String "$TCSecret" -AsPlainText -Force)
 	}
@@ -21,8 +21,8 @@
 	$ESRawValue = ""
 	$UriParameter = "$TCServerUrl/httpAuth/app/rest/latest/$TCParamLocator/parameters/$TCParamName"
 	try {
-		Write-Verbose "Getting Parameter using Invoke-RestMethod -Method Get -Uri $UriParameter -Credential $CICredential -Verbose"
-		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriParameter -Credential $CICredential)
+		Write-Verbose "Invoke-RestMethod -Method Get -Uri $UriParameter"
+		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriParameter -Credential $CICredential -Verbose)
 		$ESValue = $TCResponse.property.value
 		$ESRawValue = $TCResponse.property.type.rawValue
 		Write-Host "Existing State is" $TCResponse.property.name $ESValue $ESRawValue
@@ -38,7 +38,7 @@
 		#Keep existing data
 		if ( "$TCParamValue" -ne "keep" ) {
 			if ( "$ESValue" -ne "$TCParamValue" ) {
-				Write-Verbose "Updating Value Invoke-RestMethod -Method PUT -Uri $UriParameter/value -Credential $CICredential -Body $TCParamValue -Verbose"
+				Write-Verbose "Invoke-RestMethod -Method PUT -Uri $UriParameter/value -Body $TCParamValue"
 				$TCResponse = ( Invoke-RestMethod -Method PUT -Uri $UriParameter/value -Credential $CICredential -Body $TCParamValue -Verbose )
 			} else {
 				Write-Verbose "$UriParameter/value is up to date"
@@ -47,7 +47,7 @@
 		#Keep existing data
 		if ( "$TCParamRaw" -ne "keep" ) {
 			if ( "$ESRawValue" -ne "$TCParamRaw" ) {
-				Write-Verbose "Updating rawValue Invoke-RestMethod -Method PUT -Uri $UriParameter/type/rawValue -Credential $CICredential -Body $TCParamRaw -Verbose"
+				Write-Verbose "Invoke-RestMethod -Method PUT -Uri $UriParameter/type/rawValue -Body $TCParamRaw"
 				$TCResponse = ( Invoke-RestMethod -Method PUT -Uri $UriParameter/type/rawValue -Credential $CICredential -Body $TCParamRaw -Verbose ) 
 			} else {
 				Write-Verbose "$UriParameter/type/rawValue is up to date"
