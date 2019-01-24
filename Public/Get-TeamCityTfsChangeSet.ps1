@@ -22,7 +22,7 @@ function Get-TeamCityTfsChangeSet{
 		$ProjectsInCommit = @()
 		$ThisTFSServer = Get-TfsServer -name $TCTFSServerUrl -Credential $CICredential -Verbose
 		$ThisChangeSet = Get-TfsChangeSet -ChangesetNumber $TCTFSChangeSet -Server $ThisTFSServer
-		ForeEch ($ThisChange in $ThisChangeSet.Changes) {
+		ForEach ($ThisChange in $ThisChangeSet.Changes) {
 			$ThisFile = ($ThisChange.Item.ServerItem).Remove(0,2)
 			$ThisProjectEndIndex = $ThisFile.IndexOf('/')
 			$ThisProject = $ThisFile.Substring(0, $ThisProjectEndIndex)
