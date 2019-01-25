@@ -17,6 +17,7 @@ The module structure uses individual files for each function.
 * Get-TeamCityProperty (since TeamCityUtility 1.1)
 * Set-TeamCityBuildComment (since TeamCityUtility 1.1)
 * Set-TeamCityParam (since TeamCityUtility 1.0)
+* Get-TeamCityChanges (since TeamCityUtility 1.0)
 
 ## Version 1.
 
