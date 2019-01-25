@@ -15,14 +15,13 @@
 		Throw "[ERROR] Get-TeamCityBuildsByRevision: Creating CICredential failed"
 		exit 1
 	}
-#	http://tmcbuild01.helios.themls.com:8082/httpAuth/app/rest/latest/builds?locator=revision(version:210187)
-    $UriInvoke = "$TCServerUrl/httpAuth/app/rest/latest/builds?locator=revision(version:$TCVersion)"
+  $UriInvoke = "$TCServerUrl/httpAuth/app/rest/latest/builds?locator=revision(version:$TCVersion)"
 	try {
 		Write-Verbose "Getting Parameter using Invoke-RestMethod -Method Get -Uri $UriInvoke -Credential $CICredential -Verbose"
 		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriInvoke -Credential $CICredential)
-		$TCOutput = $TCResponse | out-string
+		$TCOutput = $TCResponse.builds | out-string
 		Write-Verbose -Message "Response $TCOutput" 
-		Return $TCResponse
+		Return $TCResponse.builds
 	}
 	catch {
 		Write-Host "$_" 
