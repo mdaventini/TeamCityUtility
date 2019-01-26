@@ -11,6 +11,7 @@ The module structure uses individual files for each function.
 
 ## Cmdlets
 
+* Set-TCCredential (since TeamCityUtility 2.)
 * Get-TeamCityActiveBranches (since TeamCityUtility 1.1)
 * Get-TeamCityParam (since TeamCityUtility 1.1)
 * Get-TeamCityProjects (since TeamCityUtility 1.1)
@@ -19,6 +20,10 @@ The module structure uses individual files for each function.
 * Set-TeamCityParam (since TeamCityUtility 1.1)
 * Get-TeamCityChanges (since TeamCityUtility 1.1)
 * Get-TeamCityBuildsByRevision (since TeamCityUtility 1.1)
+
+## Version 2.
+
+Requires to run Set-TCCredential to create $TCCredential "System.Management.Automation.PSCredential" Global variable.
 
 ## Version 1.
 
