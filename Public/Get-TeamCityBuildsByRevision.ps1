@@ -1,7 +1,7 @@
 ﻿function Get-TeamCityBuildsByRevision {
 <#
 	.SYNOPSIS
-		Get builds on a TeamCity Instance by revision. Returns builds
+		Get builds on a TeamCity Instance by revision. Returns json of build
 	.DESCRIPTION
 		Uses Invoke-RestMethod get
 	.Parameter TCServerUrl
@@ -25,9 +25,9 @@
 	try {
 		Write-Verbose "Invoke-RestMethod Get $UriInvoke"
 		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriInvoke -Credential $TCCredential)
-		$TCOutput = $TCResponse.builds | out-string
+		$TCOutput = $TCResponse.builds.build | out-string
 		Write-Verbose -Message "Response $TCOutput" 
-		Return $TCResponse.builds
+		Return $TCResponse.builds.build
 	}
 	catch {
 		Write-Host "$_" 
