@@ -23,7 +23,7 @@ function Set-TCCredential {
 	}
 	catch {
 		Write-Host "$_" 
-		Throw "|[ERROR|] Set-TCCredential: Creating Credential for $TCUser failed"
+		Throw "[ERROR] Set-TCCredential: Creating Credential for $TCUser failed"
 		exit 1
 	}
 }
