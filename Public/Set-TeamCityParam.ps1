@@ -27,7 +27,7 @@
 	)
 	Write-Verbose "Set-TeamCityParam -TCServerUrl $TCServerUrl -TCParamLocator $TCParamLocator -TCParamName $TCParamName -TCParamRaw $TCParamRaw -TCParamValue $TCParamValue"
 	if ( $null -eq $TCCredential ) {
-		Throw "[ERROR] Set-TeamCityParam TCCredential is empty. Use [Set-TCCredential -TCUser <username> -TCSecret <password>]"
+		Throw "|[ERROR|] Set-TeamCityParam TCCredential is empty. Use [Set-TCCredential -TCUser <username> -TCSecret <password>]"
 	}
 	$ESValue = ""
 	$ESRawValue = ""
@@ -68,7 +68,7 @@
 	}
 	catch {
 		Write-Host "$_" 
-		Throw "[ERROR] Set-TeamCityParam: $UriInvoke was not updated"
+		Throw "|[ERROR|] Set-TeamCityParam: $UriInvoke was not updated"
 		exit 1
 	}
 }
