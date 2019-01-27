@@ -21,6 +21,17 @@ The module structure uses individual files for each function.
 * Get-TeamCityChanges (since TeamCityUtility 1.1)
 * Get-TeamCityBuildsByRevision (since TeamCityUtility 1.1)
 
+## Help & Examples
+Get-Help
+~~~~
+Get-Help [Cmdlet_Name]
+~~~~
+
+Examples
+~~~~
+Get-Help [Cmdlet_Name] -Examples
+~~~~
+
 ## Version 2.
 
 Requires to run Set-TCCredential to create $TCCredential "System.Management.Automation.PSCredential" Global variable.
