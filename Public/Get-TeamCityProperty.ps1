@@ -1,32 +1,40 @@
 ﻿function Get-TeamCityProperty {
+<#
+	.SYNOPSIS
+		Get all properties in TeamCity by Locator and returns a TeamCity build.properties.property object.
+	.DESCRIPTION
+		Uses Invoke-RestMethod get method.
+	.Parameter TCServerUrl
+		Specifies the url of a TeamCity Instance
+	.Parameter TCPropertyLocator
+		Specifies the parameter locator
+	.Parameter TCPropertyName
+		Specifies the parameter name
+	.EXAMPLE
+		PS C:\> Get-TeamCityProperty -TCServerUrl 'http://TeamCity.yourdomain:8082' -TCPropertyLocator 'projects/id:_Root' -TCPropertyName 'env.DefaultEnvironment'
+#>
+	[CmdletBinding()]
 	param(
 		[parameter(HelpMessage="Must be a valid TeamCity Url. Example -TCServerUrl 'http://TeamCity.yourdomain:8082'")][ValidateNotNullOrEmpty()][String[]]$TCServerUrl, 
-		[parameter(HelpMessage="Valid UserName in TeamCity. Example -TCUser teamcityuser")][ValidateNotNullOrEmpty()][String[]]$TCUser,
-		[parameter(HelpMessage="Password for valid UserName in TeamCity. ")][ValidateNotNullOrEmpty()][String[]]$TCSecret,
 		[parameter(HelpMessage="Property Locator. Example -TCPropertyLocator 'projects/id:_Root'")][ValidateNotNullOrEmpty()][String[]]$TCPropertyLocator,
 		[parameter(HelpMessage="Property Name. Example -TCPropertyName 'env.DefaultEnvironment'")][ValidateNotNullOrEmpty()][String[]]$TCPropertyName
 	)
 	Write-Verbose "Get-TeamCityProperty"
-	try {
-		Write-Verbose "Creating CICredential for $TCUser"
-		$CICredential = New-Object -TypeName "System.Management.Automation.PSCredential" -ArgumentList $TCUser, (ConvertTo-SecureString -String "$TCSecret" -AsPlainText -Force)
+	if ( $null -eq $TCCredential ) {
+		Throw "[ERROR] Get-TeamCityProperty TCCredential is empty. Use [Set-TCCredential -TCUser <username> -TCSecret <password>]"
 	}
-	catch {
-		Write-Host "$_" 
-		Throw "[ERROR] Get-TeamCityProperty: Creating CICredential failed"
-		exit 1
-	}
-    $UriProperty = "$TCServerUrl/httpAuth/app/rest/latest/$TCPropertyLocator"
+	$Verbose = ($PSBoundParameters.ContainsKey('Verbose') -and $PsBoundParameters.Get_Item('Verbose'))
+    $UriInvoke = "$TCServerUrl/httpAuth/app/rest/latest/$TCPropertyLocator"
 	try {
-		Write-Verbose "Getting Property using Invoke-RestMethod -Method Get -Uri $UriProperty -Credential $CICredential -Verbose"
-		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriProperty -Credential $CICredential).build.properties.property
+		Write-Verbose "Invoke-RestMethod Get $UriInvoke"
+		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriInvoke -Credential $TCCredential -Verbose:$Verbose).build.properties.property
 		$TCOutput = $TCResponse | out-string
 		Write-Verbose $TCOutput
 		Return $TCResponse
 	}
 	catch {
 		Write-Host "$_" 
-		Throw "[ERROR] Get-TeamCityProperty: $UriProperty does not exist."
+		Throw "[ERROR] Get-TeamCityProperty: $UriInvoke does not exist."
         exit 1
     }
 }

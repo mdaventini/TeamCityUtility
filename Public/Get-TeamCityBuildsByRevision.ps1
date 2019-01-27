@@ -1,7 +1,7 @@
 ﻿function Get-TeamCityBuildsByRevision {
 <#
 	.SYNOPSIS
-		Get builds on a TeamCity Instance by revision. Returns json of build
+		Get builds on a TeamCity Instance by revision. Returns a TeamCity build object.
 	.DESCRIPTION
 		Uses Invoke-RestMethod get
 	.Parameter TCServerUrl
@@ -21,10 +21,11 @@
 	if ( $null -eq $TCCredential ) {
 		Throw "[ERROR] Get-TeamCityBuildsByRevision TCCredential is empty. Use [Set-TCCredential -TCUser <username> -TCSecret <password>]"
 	}
-  $UriInvoke = "$TCServerUrl/httpAuth/app/rest/latest/builds?locator=revision(version:$TCVersion)"
+	$Verbose = ($PSBoundParameters.ContainsKey('Verbose') -and $PsBoundParameters.Get_Item('Verbose'))
+	$UriInvoke = "$TCServerUrl/httpAuth/app/rest/latest/builds?locator=revision(version:$TCVersion)"
 	try {
 		Write-Verbose "Invoke-RestMethod Get $UriInvoke"
-		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriInvoke -Credential $TCCredential)
+		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriInvoke -Credential $TCCredential -Verbose:$Verbose)
 		$TCOutput = $TCResponse.builds.build | out-string
 		Write-Verbose -Message "Response $TCOutput" 
 		Return $TCResponse.builds.build

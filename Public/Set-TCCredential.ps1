@@ -17,8 +17,9 @@ function Set-TCCredential {
 		[parameter(HelpMessage="Password for valid UserName in TeamCity. ")][ValidateNotNullOrEmpty()][String[]]$TCSecret
 	)
 	Write-Verbose "Set-TCCredential -TCUser $TCUser -TCSecret SECRET"
+	$Verbose = ($PSBoundParameters.ContainsKey('Verbose') -and $PsBoundParameters.Get_Item('Verbose'))
 	try {
-		$NewCredential = New-Object -TypeName "System.Management.Automation.PSCredential" -ArgumentList $TCUser, (ConvertTo-SecureString -String "$TCSecret" -AsPlainText -Force) -Verbose
+		$NewCredential = New-Object -TypeName "System.Management.Automation.PSCredential" -ArgumentList $TCUser, (ConvertTo-SecureString -String "$TCSecret" -AsPlainText -Force) -Verbose:$Verbose
 		Set-Variable -Name TCCredential -Value $NewCredential -Scope Global
 	}
 	catch {

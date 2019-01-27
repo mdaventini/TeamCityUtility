@@ -1,29 +1,35 @@
 function Get-TeamCityActiveBranches{
+<#
+	.SYNOPSIS
+		Get all active branches on all projects in a TeamCity Instance filtering by a given array of patterns. Returns all active branches by project name.
+	.DESCRIPTION
+		Uses Get-TeamCityProjects and Invoke-RestMethod get method.
+	.Parameter TCServerUrl
+		Specifies the url of a TeamCity Instance
+	.Parameter TCBranchesPattern
+		Specifies an array with branches pattern to select
+	.EXAMPLE
+		PS C:\> Get-TeamCityActiveBranches -TCServerUrl 'http://TeamCity.yourdomain:8082' -TCBranchesPattern '@('^2.*-*', '^3.*-*')'
+#>
+	[CmdletBinding()]
 	param(
 		[parameter(HelpMessage="Must be a valid TeamCity Url. Example -TCServerUrl 'http://TeamCity.yourdomain:8082'")][ValidateNotNullOrEmpty()][String[]]$TCServerUrl, 
-		[parameter(HelpMessage="Valid UserName in TeamCity. Example -TCUser teamcityuser")][ValidateNotNullOrEmpty()][String[]]$TCUser,
-		[parameter(HelpMessage="Password for valid UserName in TeamCity. ")][ValidateNotNullOrEmpty()][String[]]$TCSecret,
 		[parameter(HelpMessage="Array with branches pattern to select. Example -TCBranchesPattern '@('^2.*-*', '^3.*-*')'")][ValidateNotNullOrEmpty()][String[]]$TCBranchesPattern
 	)
 	Write-Verbose "Get-TeamCityActiveBranches $TCBranchesPattern"
-	try {
-		Write-Verbose "Creating CICredential for $TCUser"
-		$CICredential = New-Object -TypeName "System.Management.Automation.PSCredential" -ArgumentList $TCUser, (ConvertTo-SecureString -String "$TCSecret" -AsPlainText -Force)
+	if ( $null -eq $TCCredential ) {
+		Throw "[ERROR] Get-TeamCityBuildsByRevision TCCredential is empty. Use [Set-TCCredential -TCUser <username> -TCSecret <password>]"
 	}
-	catch {
-		Write-Host "$_" 
-		Throw "[ERROR] Get-TeamCityActiveBranches: Creating CICredential failed"
-		exit 1
-	}
+	$Verbose = ($PSBoundParameters.ContainsKey('Verbose') -and $PsBoundParameters.Get_Item('Verbose'))
 	$AllActiveBranches = @()
 	try {
-		$TCResponse = (Get-TeamCityProjects -TCServerUrl $TCServerUrl -TCUser $TCUser -TCSecret $TCSecret -Verbose)
+		$TCResponse = (Get-TeamCityProjects -TCServerUrl $TCServerUrl -Verbose:$Verbose)
 		ForEach ( $ThisProject in $TCResponse ) {
 			$ProjName = $ThisProject.Name
 			$ProjHRef = $ThisProject.href
 			$UriInvoke = "$TCServerUrl$ProjHRef/branches"
 			Write-Verbose "Invoke-RestMethod Get $UriInvoke"
-			$XmlProjectBranches = ((Invoke-RestMethod -Method Get -Uri $UriInvoke -Credential $CICredential -Verbose).branches.branch.name )
+			$XmlProjectBranches = ((Invoke-RestMethod -Method Get -Uri $UriInvoke -Credential $TCCredential -Verbose:$Verbose).branches.branch.name )
 			ForEach ( $ThisProjectBranches in $XmlProjectBranches ) {
 				$BranchName = $ThisProjectBranches
 				ForEach ( $ThisPattern in $TCBranchesPattern) {
