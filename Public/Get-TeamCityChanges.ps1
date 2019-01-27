@@ -1,7 +1,7 @@
 ﻿function Get-TeamCityChanges {
 <#
 	.SYNOPSIS
-		Get changes in a TeamCity Instance by VCS revision. Returns a TeamCity change object.
+		Get changes in a TeamCity Instance by locator using VCS revision. Returns a TeamCity change object.
 	.DESCRIPTION
 		Uses Invoke-RestMethod get method.
 	.Parameter TCServerUrl
@@ -22,13 +22,26 @@
 		Throw "[ERROR] Get-TeamCityChanges TCCredential is empty. Use [Set-TCCredential -TCUser <username> -TCSecret <password>]"
 	}
 	$Verbose = ($PSBoundParameters.ContainsKey('Verbose') -and $PsBoundParameters.Get_Item('Verbose'))
-    $UriInvoke = "$TCServerUrl/httpAuth/app/rest/latest/changes/version:$TCVersion"
+    $TCVersionChanges = @()
+    $UriInvoke = "$TCServerUrl/httpAuth/app/rest/latest/changes/?locator=version:$TCVersion"
 	try {
 		Write-Verbose "Invoke-RestMethod Get $UriInvoke"
-		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriInvoke -Credential $TCCredential -Verbose:$Verbose)
-		$TCOutput = $TCResponse.change | out-string
+		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriInvoke -Credential $TCCredential -Verbose:$Verbose).changes.change
+        ForEach ( $ThisChange in $TCResponse ) {
+            $ChangeRef = $ThisChange.href
+        	$UriInvoke = "$TCServerUrl$ChangeRef"
+			Write-Verbose "Invoke-RestMethod Get $UriInvoke"
+			$XmlChanges = (Invoke-RestMethod -Method Get -Uri $UriInvoke -Credential $TCCredential -Verbose:$Verbose).change
+			ForEach ( $ThisChanges in $XmlChanges ) {
+				$TCVersionChanges += New-Object -TypeName PSObject -Property @{
+					ChangeComment = $ThisChanges.comment;
+					ChangeUserName = $ThisChanges.username;
+                    ChangeFile = $ThisChanges.files.file.file}
+			}
+		}
+		$TCOutput = $TCVersionChanges | out-string
 		Write-Verbose -Message "Change $TCOutput" 
-		Return $TCResponse.change
+		Return $TCVersionChanges
 	}
 	catch {
 		Write-Host "$_" 
