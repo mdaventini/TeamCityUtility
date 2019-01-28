@@ -7,9 +7,9 @@
 	.Parameter TCServerUrl
 		Specifies the url of a TeamCity Instance
 	.Parameter TCPropertyLocator
-		Specifies the parameter locator
+		Specifies the property locator
 	.Parameter TCPropertyName
-		Specifies the parameter name
+		Specifies the REGEX for property name
 	.EXAMPLE
 		PS C:\> Get-TeamCityProperty -TCServerUrl 'http://TeamCity.yourdomain:8082' -TCPropertyLocator 'projects/id:_Root' -TCPropertyName 'env.DefaultEnvironment'
 #>
@@ -27,7 +27,7 @@
     $UriInvoke = "$TCServerUrl/httpAuth/app/rest/latest/$TCPropertyLocator"
 	try {
 		Write-Verbose "Invoke-RestMethod Get $UriInvoke"
-		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriInvoke -Credential $TCCredential -Verbose:$Verbose).build.properties.property
+		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriInvoke -Credential $TCCredential -Verbose:$Verbose).build.properties.property | Where-Object {$_.Name -match $TCPropertyName }
 		$TCOutput = $TCResponse | out-string
 		Write-Verbose $TCOutput
 		Return $TCResponse
