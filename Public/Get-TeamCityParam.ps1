@@ -26,7 +26,7 @@
 	$Verbose = ($PSBoundParameters.ContainsKey('Verbose') -and $PsBoundParameters.Get_Item('Verbose'))
 	$UriInvoke = "$TCServerUrl/httpAuth/app/rest/latest/$TCParamLocator/parameters"
 	try {
-		Write-Verbose "Invoke-RestMethod Get $UriInvoke"
+		Write-Verbose "Invoke-RestMethod Get $UriInvoke $TCParamName"
 		$TCResponse = (Invoke-RestMethod -Method Get -Uri $UriInvoke -Credential $TCCredential -Verbose:$Verbose).properties.property | Where-Object {$_.Name -match $TCParamName }
 		$TCOutput = $TCResponse | out-string
 		Write-Verbose $TCOutput

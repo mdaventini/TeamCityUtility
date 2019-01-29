@@ -11,7 +11,7 @@
 	.Parameter TCPropertyName
 		Specifies the REGEX for property name
 	.EXAMPLE
-		PS C:\> Get-TeamCityProperty -TCServerUrl 'http://TeamCity.yourdomain:8082' -TCPropertyLocator 'projects/id:_Root' -TCPropertyName 'env.DefaultEnvironment'
+		PS C:\> Get-TeamCityProperty -TCServerUrl 'http://TeamCity.yourdomain:8082' -TCPropertyLocator 'buildTypes/id:%system.teamcity.buildType.id%/builds/id:%teamcity.build.id%' -TCPropertyName 'env.DefaultEnvironment'
 #>
 	[CmdletBinding()]
 	param(
