@@ -9,18 +9,27 @@ function Get-TeamCityVCSProblems{
 		Uses Invoke-RestMethod DELETE repositoryState to fix the problem in the vcs-root-instance
 	.Parameter TCServerUrl
 		Specifies the url of a TeamCity Instance
+	.Parameter TCSinceDate
+		Specifies start date to check builds
 	.Parameter TCFix
 		Specifies if will fix problems
 	.EXAMPLE
-		Get data
-		PS C:\> Get-TeamCityVCSProblems -TCServerUrl 'http://mytfs:8080/tfs/MyCollection' 
+		Get-TeamCityVCSProblems -TCServerUrl 'http://mytfs:8080/tfs/MyCollection' 
+        Get all data
 	.EXAMPLE
-		Fix problems
-		PS C:\> Get-TeamCityVCSProblems -TCServerUrl 'http://mytfs:8080/tfs/MyCollection' -TCFix
+		Get-TeamCityVCSProblems -TCServerUrl 'http://mytfs:8080/tfs/MyCollection' -TCSinceDate 19701024T164500-0300
+        Get data since a particular date
+	.EXAMPLE
+		Get-TeamCityVCSProblems -TCServerUrl 'http://mytfs:8080/tfs/MyCollection' -TCFix
+		Fix all problems
+	.EXAMPLE
+		Get-TeamCityVCSProblems -TCServerUrl 'http://mytfs:8080/tfs/MyCollection' -TCSinceDate 19701024T164500-0300 -TCFix
+        Fix all problems since a particular date
 #>
 	[CmdletBinding()]
 	param(
-		[parameter(HelpMessage="Must be a valid TeamCity Url. Example -TCServerUrl 'http://TeamCity.yourdomain:8082'")][ValidateNotNullOrEmpty()][String[]]$TCServerUrl, 
+		[parameter(HelpMessage="Must be a valid TeamCity Url. Example -TCServerUrl 'http://TeamCity.yourdomain:8082'")][ValidateNotNullOrEmpty()][String[]]$TCServerUrl,
+		[parameter(HelpMessage="Must be a TeamCity timestamp with format 'yyyyMMddTHHmmsszzz'. Example -TCSinceDate 19701024T164500-0300")][ValidateNotNullOrEmpty()][String[]]$TCSinceDate,		
 		[parameter(HelpMessage="Use -TCFix to fix problems.")][Switch]$TCFix
 	)
 	Write-Verbose "Get-TeamCityVCSProblems"
@@ -29,8 +38,10 @@ function Get-TeamCityVCSProblems{
 	}
 	$Verbose = ($PSBoundParameters.ContainsKey('Verbose') -and $PsBoundParameters.Get_Item('Verbose'))
 	try {
-		$AnHourEarlier = ((Get-Date).AddHours(-60)).ToString("yyyyMMddTHHmmsszzz").Replace(":","")
-		$UriInvoke = "$TCServerUrl/httpAuth/app/rest/latest/problemOccurrences?locator=build:(failedToStart:true,sinceDate:$AnHourEarlier)&fields=problemOccurrence(details)"
+		if ( $TCSinceDate ) {
+            $SinceDate = ",sinceDate:$TCSinceDate"
+        }
+		$UriInvoke = "$TCServerUrl/httpAuth/app/rest/latest/problemOccurrences?locator=build:(failedToStart:true$SinceDate)&fields=problemOccurrence(details)"
 		Write-Verbose "Invoke-RestMethod Get $UriInvoke"
 		$FailureFirst = "Failed to collect changes, error: Error collecting changes for VCS repository"
 		$FailureSecond = "jetbrains.buildServer.util.graph.CycleDetectedException: Cycle found between"
