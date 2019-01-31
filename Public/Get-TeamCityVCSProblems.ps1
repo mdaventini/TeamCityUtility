@@ -40,17 +40,23 @@ function Get-TeamCityVCSProblems{
 			$ProblemsFound = $true
 			$VCSRepositoryName = (($_.details).Split("'")[1].Split(" {")[0]).Replace("`"","")
 			$VCSId = ($_.details).Replace("`"","").Replace("'","").Replace("`n"," ").Split("=")[1].Split(",")[0]
-			Write-Host "$VCSRepositoryName has problems and need to be fixed" 
-			$UriInvokeFix = "$TCServerUrl/httpAuth/app/rest/latest/vcs-root-instances/id:$VCSId/repositoryState"
 			if ( $Fix ) {
+				$UriInvokeFix = "$TCServerUrl/httpAuth/app/rest/latest/vcs-root-instances/id:$VCSId/repositoryState"
 				Write-Host "$VCSRepositoryName will be fixed: Invoke-RestMethod DELETE $UriInvokeFix" 
 				Invoke-RestMethod -Method DELETE $UriInvokeFix -Credential $TCCredential -Verbose:$Verbose   
-			}
-		}
-		if ( $ProblemsFound ) {
-			Write-Host "Please run Get-TeamCityVCSProblems -TCServerUrl 'http://mytfs:8080/tfs/MyCollection' -TCFix to fix found problems"
+			} 
+			else {
+				Write-Host "$VCSRepositoryName has problems and need to be fixed" 
+			} 
 		}
 		Write-Verbose -Message "Done! " 
+		if ( $ProblemsFound -and -not $Fix ) {
+			Write-Verbose -Message "Will return message" 
+			Return "Please run Get-TeamCityVCSProblems -TCServerUrl 'http://mytfs:8080/tfs/MyCollection' -TCFix to fix found problems"
+		}
+		#Return $false for no problems found or fixed
+		Write-Verbose -Message "Will return false" 
+		Return $false
 	}
 	catch {
 		Write-Host "$_" 
