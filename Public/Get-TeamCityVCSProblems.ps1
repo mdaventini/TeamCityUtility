@@ -51,7 +51,7 @@ function Get-TeamCityVCSProblems{
 			$ProblemsFound = $true
 			$VCSRepositoryName = (($_.details).Split("'")[1].Split(" {")[0]).Replace("`"","")
 			$VCSId = ($_.details).Replace("`"","").Replace("'","").Replace("`n"," ").Split("=")[1].Split(",")[0]
-			if ( $Fix ) {
+			if ( $TCFix ) {
 				$UriInvokeFix = "$TCServerUrl/httpAuth/app/rest/latest/vcs-root-instances/id:$VCSId/repositoryState"
 				Write-Host "$VCSRepositoryName will be fixed: Invoke-RestMethod DELETE $UriInvokeFix" 
 				Invoke-RestMethod -Method DELETE $UriInvokeFix -Credential $TCCredential -Verbose:$Verbose   
