@@ -14,16 +14,16 @@ function Get-TeamCityVCSProblems{
 	.Parameter TCFix
 		Specifies if will fix problems
 	.EXAMPLE
-		Get-TeamCityVCSProblems -TCServerUrl 'http://mytfs:8080/tfs/MyCollection' 
+		Get-TeamCityVCSProblems -TCServerUrl 'http://TeamCity.yourdomain:8082'
         Get all data
 	.EXAMPLE
-		Get-TeamCityVCSProblems -TCServerUrl 'http://mytfs:8080/tfs/MyCollection' -TCSinceDate 19701024T164500-0300
+		Get-TeamCityVCSProblems -TCServerUrl 'http://TeamCity.yourdomain:8082' -TCSinceDate 19701024T164500-0300
         Get data since a particular date
 	.EXAMPLE
-		Get-TeamCityVCSProblems -TCServerUrl 'http://mytfs:8080/tfs/MyCollection' -TCFix
+		Get-TeamCityVCSProblems -TCServerUrl 'http://TeamCity.yourdomain:8082' -TCFix
 		Fix all problems
 	.EXAMPLE
-		Get-TeamCityVCSProblems -TCServerUrl 'http://mytfs:8080/tfs/MyCollection' -TCSinceDate 19701024T164500-0300 -TCFix
+		Get-TeamCityVCSProblems -TCServerUrl 'http://TeamCity.yourdomain:8082' -TCSinceDate 19701024T164500-0300 -TCFix
         Fix all problems since a particular date
 #>
 	[CmdletBinding()]
