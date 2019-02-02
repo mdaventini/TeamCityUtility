@@ -1,7 +1,7 @@
 function Get-TeamCityVCSProblems{
 <#
 	.SYNOPSIS
-		Gets problemOccurrences in builds (filtering last 60 minutes sinceDate). Shows problemOccurrences.details. if -TCFix $true fixes found problems
+		Gets problemOccurrences in builds (filtering sinceDate with TCSinceDate). Shows problemOccurrences.details. if -TCFix $true fixes found problems
 	.DESCRIPTION
 		Uses Invoke-RestMethod get to get all problemOccurrences since a given date from now.
 		Checks if the details error contains 'Failed to collect changes, error: Error collecting changes for VCS repository' and 'jetbrains.buildServer.util.graph.CycleDetectedException: Cycle found between'
@@ -28,9 +28,9 @@ function Get-TeamCityVCSProblems{
 #>
 	[CmdletBinding()]
 	param(
-		[parameter(HelpMessage="Must be a valid TeamCity Url. Example -TCServerUrl 'http://TeamCity.yourdomain:8082'")][ValidateNotNullOrEmpty()][String[]]$TCServerUrl,
-		[parameter(HelpMessage="Must be a TeamCity timestamp with format 'yyyyMMddTHHmmsszzz'. Example -TCSinceDate 19701024T164500-0300")][ValidateNotNullOrEmpty()][String[]]$TCSinceDate,		
-		[parameter(HelpMessage="Use -TCFix to fix problems.")][Switch]$TCFix
+		[parameter(HelpMessage="Must be a valid TeamCity Url. Use Get-Help Get-TeamCityVCSProblems -Examples to see examples")][ValidateNotNullOrEmpty()][String[]]$TCServerUrl,
+		[parameter(HelpMessage="Must be a TeamCity timestamp with format 'yyyyMMddTHHmmsszzz'. Use Get-Help Get-TeamCityVCSProblems -Examples to see examples")][ValidateNotNullOrEmpty()][String[]]$TCSinceDate,		
+		[parameter(HelpMessage="Use -TCFix to fix problems. Use Get-Help Get-TeamCityVCSProblems -Examples to see examples")][Switch]$TCFix
 	)
 	Write-Verbose "Get-TeamCityVCSProblems"
 	if ( $null -eq $TCCredential ) {
@@ -53,15 +53,15 @@ function Get-TeamCityVCSProblems{
 			$VCSId = ($_.details).Replace("`"","").Replace("'","").Replace("`n"," ").Split("=")[1].Split(",")[0]
 			if ( $TCFix ) {
 				$UriInvokeFix = "$TCServerUrl/httpAuth/app/rest/latest/vcs-root-instances/id:$VCSId/repositoryState"
-				Write-Host "$VCSRepositoryName will be fixed: Invoke-RestMethod DELETE $UriInvokeFix" 
-				Invoke-RestMethod -Method DELETE $UriInvokeFix -Credential $TCCredential -Verbose:$Verbose   
+				Write-Host "$VCSRepositoryName will be fixed" 
+				Invoke-TeamCityRESTAPI -TCMethod DELETE -TCUri $UriInvokeFix -Verbose:$Verbose   
 			} 
 			else {
 				Write-Host "$VCSRepositoryName has problems and need to be fixed" 
 			} 
 		}
 		Write-Verbose -Message "Done! " 
-		if ( $ProblemsFound -and -not $Fix ) {
+		if ( $ProblemsFound -and -not $TCFix ) {
 			Write-Verbose -Message "Will return message" 
 			Return "Please run Get-TeamCityVCSProblems -TCServerUrl 'http://mytfs:8080/tfs/MyCollection' -TCFix to fix found problems"
 		}
