@@ -65,9 +65,9 @@ function Get-TeamCityVCSProblems{
 			Write-Verbose -Message "Will return message" 
 			Return "Please run Get-TeamCityVCSProblems -TCServerUrl 'http://mytfs:8080/tfs/MyCollection' -TCFix to fix found problems"
 		}
-		#Return $false for no problems found or fixed
-		Write-Verbose -Message "Will return false" 
-		Return $false
+		#Return empty string for no problems found or fixed
+		Write-Verbose -Message "Ok! will return empty string" 
+		Return ""
 	}
 	catch {
 		Write-Host "$_" 
