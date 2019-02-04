@@ -34,7 +34,7 @@ function Get-TeamCityVCSProblems{
 	)
 	Write-Verbose "Get-TeamCityVCSProblems"
 	if ( $null -eq $TCCredential ) {
-		Throw "[ERROR] Get-TeamCityBuildsByRevision TCCredential is empty. Use [Set-TCCredential -TCUser <username> -TCSecret <password>]"
+		Throw "[ERROR] Get-TeamCityVCSProblems TCCredential is empty. Use [Set-TCCredential -TCUser <username> -TCSecret <password>]"
 	}
 	$Verbose = ($PSBoundParameters.ContainsKey('Verbose') -and $PsBoundParameters.Get_Item('Verbose'))
 	try {
