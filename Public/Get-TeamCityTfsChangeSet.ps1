@@ -14,13 +14,17 @@ function Get-TeamCityTfsChangeSet{
 		Specifies if will return detailed data
 	.EXAMPLE
 		PS C:\> Get-TeamCityTfsChangeSet -TCTFSServerUrl 'http://mytfs:8080/tfs/MyCollection' -TCTFSChangeSet %build.vcs.number% -TCProjectsInCI @( 'FirstProject', 'SecondProject', 'DependantProject') -TCDetailed $true
+		Will return a list of changes for the given vcs number from TeamCity and select projects
+		Please use -TCTFSServerUrl format as 'TFS 2010+: http[s]://<TFS Server>:<Port>/tfs/<Collection Name>'
+	.EXAMPLE
 		PS C:\> Get-TeamCityTfsChangeSet -TCTFSServerUrl 'http://mytfs:8080/tfs/MyCollection' -TCTFSChangeSet 1970 -TCProjectsInCI @( 'FirstProject', 'SecondProject', 'DependantProject')
+		Will return a list of changes for the given vcs number from TeamCity and select projects
 #>
 	[CmdletBinding()]
 	param(
-		[parameter(HelpMessage="Must be a valid Tfs Url. Example -TCTFSServerUrl 'TFS 2010+: http[s]://<TFS Server>:<Port>/tfs/<Collection Name>'")][ValidateNotNullOrEmpty()][String[]]$TCTFSServerUrl, 
-		[parameter(HelpMessage="ChangeSet number. Example -TCTFSChangeSet 1970")][ValidateNotNullOrEmpty()][Int]$TCTFSChangeSet,
-		[parameter(HelpMessage="Array of TFS Project Names. Example -TCProjectsInCI @( 'FirstProject', 'SecondProject', 'DependantProject')")][ValidateNotNullOrEmpty()][String[]]$TCProjectsInCI,
+		[parameter(HelpMessage="Must be a valid Tfs Url. Use Get-Help Get-TeamCityTfsChangeSet -Examples to see examples")][ValidateNotNullOrEmpty()][String[]]$TCTFSServerUrl, 
+		[parameter(HelpMessage="ChangeSet number. Use Get-Help Get-TeamCityTfsChangeSet -Examples to see examples")][ValidateNotNullOrEmpty()][Int]$TCTFSChangeSet,
+		[parameter(HelpMessage="Array of TFS Project Names. Use Get-Help Get-TeamCityTfsChangeSet -Examples to see examples")][ValidateNotNullOrEmpty()][String[]]$TCProjectsInCI,
 		[parameter(HelpMessage="Use -TCDetailed to get full detail of files in commit. Example -TCDetailed")][Switch]$TCDetailed
 	)
 	Write-Verbose "Get-TeamCityTfsChangeSet"
@@ -46,7 +50,7 @@ function Get-TeamCityTfsChangeSet{
 		}
 		If ( $TCDetailed ) {
 			Write-Verbose -Message "Will return Details In Commit" 
-			$ProjectsInCommit = $ThisChangeSet | Select-Object -Property Committer, Comment -ExpandProperty Changes | Select-Object -Property Committer, Comment -ExpandProperty Item | Select-Object -Property Committer, Comment, ServerItem 
+			$ProjectsInCommit = $ThisChangeSet | Select-Object -Property Committer, Comment -ExpandProperty Changes | Select-Object -Property Committer, Comment -ExpandProperty Item | Select-Object * 
 		}
 		$TCOutput = $ProjectsInCommit | out-string
 		Write-Verbose -Message "ProjectsInCommit $TCOutput" 
