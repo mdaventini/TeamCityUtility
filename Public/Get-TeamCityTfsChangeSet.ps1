@@ -14,11 +14,17 @@ function Get-TeamCityTfsChangeSet{
 		Specifies if will return detailed data
 	.EXAMPLE
 		PS C:\> Get-TeamCityTfsChangeSet -TCTFSServerUrl 'http://mytfs:8080/tfs/MyCollection' -TCTFSChangeSet %build.vcs.number% -TCProjectsInCI @( 'FirstProject', 'SecondProject', 'DependantProject') -TCDetailed $true
-		Will return a list of changes for the given vcs number from TeamCity and select projects
+		Will return a list of ProjectsInCommit for the given vcs number from TeamCity and selected projects
 		Please use -TCTFSServerUrl format as 'TFS 2010+: http[s]://<TFS Server>:<Port>/tfs/<Collection Name>'
 	.EXAMPLE
 		PS C:\> Get-TeamCityTfsChangeSet -TCTFSServerUrl 'http://mytfs:8080/tfs/MyCollection' -TCTFSChangeSet 1970 -TCProjectsInCI @( 'FirstProject', 'SecondProject', 'DependantProject')
-		Will return a list of changes for the given vcs number from TeamCity and select projects
+		Will return a list of ProjectsInCommit for the given vcs number from TeamCity and selected projects
+	.EXAMPLE
+		PS C:\> Get-TeamCityTfsChangeSet -TCTFSServerUrl 'http://mytfs:8080/tfs/MyCollection' -TCTFSChangeSet 1970 -TCProjectsInCI @( 'FirstProject', 'SecondProject', 'DependantProject') -TCDetailed
+		Will return a list of detailed changes for the given vcs number from TeamCity and selected projects
+	.EXAMPLE
+		PS C:\> Get-TeamCityTfsChangeSet -TCTFSServerUrl 'http://mytfs:8080/tfs/MyCollection' -TCTFSChangeSet 1970 -TCDetailed
+		Will return a list of detailed changes for the given vcs number from TeamCity 
 #>
 	[CmdletBinding()]
 	param(
